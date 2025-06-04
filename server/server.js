@@ -19,7 +19,7 @@ const app = express();
 app.use(cookieParser());
 const allowedOrigins = [
   'http://localhost:3000', // Local React app
-  'https://your-netlify-site.netlify.app', // Netlify deployed frontend
+  'https://hstmng.netlify.app/', // Netlify deployed frontend
 ];
 
 app.use(cors({
