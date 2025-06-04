@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const STATUS_OPTIONS = ['Pending', 'In Progress', 'Resolved'];
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
 const AdminMaintenanceRequests = () => {
   const navigate = useNavigate();
@@ -18,9 +19,7 @@ const AdminMaintenanceRequests = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/admin/maintenance?status=${statusFilter}`
-      );
+      const res = await axios.get(`${API_BASE_URL}/admin/maintenance?status=${statusFilter}`);
       setRequests(res.data);
     } catch (err) {
       setError('Failed to fetch requests');
@@ -34,7 +33,7 @@ const AdminMaintenanceRequests = () => {
     setError('');
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/admin/maintenance/search?query=${encodeURIComponent(searchQuery)}`
+        `${API_BASE_URL}/admin/maintenance/search?query=${encodeURIComponent(searchQuery)}`
       );
       setRequests(res.data);
     } catch (err) {
@@ -57,7 +56,7 @@ const AdminMaintenanceRequests = () => {
   const handleStatusChange = async (id, newStatus) => {
     setUpdatingId(id);
     try {
-      await axios.put(`http://localhost:5000/api/admin/maintenance/${id}`, {
+      await axios.put(`${API_BASE_URL}/admin/maintenance/${id}`, {
         status: newStatus,
       });
       if (searchMode) {

@@ -32,30 +32,32 @@ const StaffForm = ({ selectedStaff = null, onSuccess }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
-    try {
-      if (selectedStaff) {
-        // Don't send password if not filled
-        const { password, ...editData } = form;
-        const dataToSend = password ? form : editData;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-        await axios.put(`http://localhost:5000/api/staff/${selectedStaff._id}`, dataToSend);
-      } else {
-        await axios.post('http://localhost:5000/api/staff', form);
-      }
+  try {
+    if (selectedStaff) {
+      // Don't send password if not filled
+      const { password, ...editData } = form;
+      const dataToSend = password ? form : editData;
 
-      onSuccess();
-      setForm({ name: '', email: '', phone: '', role: 'Staff', password: '' });
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error saving staff');
-    } finally {
-      setLoading(false);
+      await axios.put(`${API_BASE_URL}/staff/${selectedStaff._id}`, dataToSend);
+    } else {
+      await axios.post(`${API_BASE_URL}/staff`, form);
     }
-  };
+
+    onSuccess();
+    setForm({ name: '', email: '', phone: '', role: 'Staff', password: '' });
+  } catch (err) {
+    setError(err.response?.data?.message || 'Error saving staff');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6 max-w-xl mx-auto border border-indigo-200">

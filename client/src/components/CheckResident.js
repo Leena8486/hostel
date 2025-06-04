@@ -7,20 +7,25 @@ const CheckResident = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async () => {
-    setLoading(true);
-    setError('');
-    setResident(null);
+const handleSearch = async () => {
+  setLoading(true);
+  setError('');
+  setResident(null);
 
-    try {
-      const res = await axios.get(`http://localhost:5000/api/staff/residents/search?email=${email}`);
-      setResident(res.data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Resident not found');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
+    const res = await axios.get(`${API_BASE_URL}/api/staff/residents/search?email=${email}`, {
+      withCredentials: true
+    });
+
+    setResident(res.data);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Resident not found');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-md mt-10 font-sans">

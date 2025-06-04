@@ -7,46 +7,48 @@ export default function StaffDashboard() {
   const [formData, setFormData] = useState({ name: '', email: '', role: 'Staff' });
 
   // Fetch staff data
-  const fetchStaff = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/staff');
-      setStaffList(res.data);
-    } catch (err) {
-      console.error('Error fetching staff:', err.message);
-    }
-  };
+ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
-  useEffect(() => {
+const fetchStaff = async () => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/staff`);
+    setStaffList(res.data);
+  } catch (err) {
+    console.error('Error fetching staff:', err.message);
+  }
+};
+
+useEffect(() => {
+  fetchStaff();
+}, []);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    if (selectedStaff) {
+      await axios.put(`${API_BASE_URL}/staff/${selectedStaff._id}`, formData);
+    } else {
+      await axios.post(`${API_BASE_URL}/staff`, formData);
+    }
+    setFormData({ name: '', email: '', role: 'Staff' });
+    setSelectedStaff(null);
     fetchStaff();
-  }, []);
+  } catch (err) {
+    console.error('Save error:', err.message);
+  }
+};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (selectedStaff) {
-        await axios.put(`http://localhost:5000/api/staff/${selectedStaff._id}`, formData);
-      } else {
-        await axios.post('http://localhost:5000/api/staff', formData);
-      }
-      setFormData({ name: '', email: '', role: 'Staff' });
-      setSelectedStaff(null);
-      fetchStaff();
-    } catch (err) {
-      console.error('Save error:', err.message);
-    }
-  };
+const handleEdit = (staff) => {
+  setSelectedStaff(staff);
+  setFormData({ name: staff.name, email: staff.email, role: staff.role });
+};
 
-  const handleEdit = (staff) => {
-    setSelectedStaff(staff);
-    setFormData({ name: staff.name, email: staff.email, role: staff.role });
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm('Delete this staff member?')) {
-      await axios.delete(`http://localhost:5000/api/staff/${id}`);
-      fetchStaff();
-    }
-  };
+const handleDelete = async (id) => {
+  if (window.confirm('Delete this staff member?')) {
+    await axios.delete(`${API_BASE_URL}/staff/${id}`);
+    fetchStaff();
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">

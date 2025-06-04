@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+
 export default function ManageRooms() {
   const [rooms, setRooms] = useState([]);
   const [form, setForm] = useState({ number: '', type: 'Single', capacity: 1 });
@@ -14,7 +16,9 @@ export default function ManageRooms() {
 
   const fetchRooms = async () => {
     try {
-      const { data } = await axios.get('/api/admin/rooms', { withCredentials: true });
+      const { data } = await axios.get(`${API_BASE_URL}/admin/rooms`, {
+        withCredentials: true,
+      });
       setRooms(data);
     } catch {
       toast.error('Failed to load rooms');
@@ -29,11 +33,17 @@ export default function ManageRooms() {
     e.preventDefault();
     try {
       if (editingRoom) {
-        await axios.put(`/api/admin/rooms/${editingRoom._id}`, form, { withCredentials: true });
+        await axios.put(
+          `${API_BASE_URL}/admin/rooms/${editingRoom._id}`,
+          form,
+          { withCredentials: true }
+        );
         toast.success('Room updated!');
         setEditingRoom(null);
       } else {
-        await axios.post('/api/admin/rooms', form, { withCredentials: true });
+        await axios.post(`${API_BASE_URL}/admin/rooms`, form, {
+          withCredentials: true,
+        });
         toast.success('Room added!');
       }
       setForm({ number: '', type: 'Single', capacity: 1 });
@@ -45,13 +55,19 @@ export default function ManageRooms() {
 
   const startEdit = (room) => {
     setEditingRoom(room);
-    setForm({ number: room.number, type: room.type, capacity: room.capacity });
+    setForm({
+      number: room.number,
+      type: room.type,
+      capacity: room.capacity,
+    });
   };
 
   const deleteRoom = async (id) => {
     if (!window.confirm('Are you sure you want to delete this room?')) return;
     try {
-      await axios.delete(`/api/admin/rooms/${id}`, { withCredentials: true });
+      await axios.delete(`${API_BASE_URL}/admin/rooms/${id}`, {
+        withCredentials: true,
+      });
       toast.success('Room deleted');
       fetchRooms();
     } catch {
@@ -59,7 +75,7 @@ export default function ManageRooms() {
     }
   };
 
-  const filteredRooms = rooms.filter(room =>
+  const filteredRooms = rooms.filter((room) =>
     room.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
     room.type.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -95,7 +111,7 @@ export default function ManageRooms() {
               placeholder="Room Number"
               value={form.number}
               onChange={(e) => setForm({ ...form, number: e.target.value })}
-              className="rounded-lg bg-gray-800 border border-cyan-600 px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent text-cyan-100 font-medium"
+              className="rounded-lg bg-gray-800 border border-cyan-600 px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-cyan-100 font-medium"
               required
               autoComplete="off"
             />
@@ -160,6 +176,7 @@ export default function ManageRooms() {
         {filteredRooms.map((room) => {
           const assignedCount = room.assignedTo?.length || 0;
           const full = assignedCount >= room.capacity;
+
           return (
             <div
               key={room._id}
@@ -194,22 +211,20 @@ export default function ManageRooms() {
                 )}
               </p>
 
-              {user?.role === 'Admin' && (
-                <div className="mt-6 flex gap-3">
-                  <button
-                    onClick={() => startEdit(room)}
-                    className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-lg py-2 shadow-md transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteRoom(room._id)}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg py-2 shadow-md transition"
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => startEdit(room)}
+                  className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold rounded-lg py-2 shadow-md transition"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteRoom(room._id)}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg py-2 shadow-md transition"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           );
         })}

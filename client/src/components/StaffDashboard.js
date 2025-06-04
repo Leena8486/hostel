@@ -5,6 +5,8 @@ import CheckResident from './CheckResident';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+
 const StaffDashboard = () => {
   const [activeTab, setActiveTab] = useState('menu');
   const [staffList, setStaffList] = useState([]);
@@ -13,7 +15,7 @@ const StaffDashboard = () => {
 
   const fetchStaff = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/staff', { withCredentials: true });
+      const res = await axios.get(`${API_BASE_URL}/staff`, { withCredentials: true });
       setStaffList(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Failed to fetch staff:', err);
@@ -28,7 +30,7 @@ const StaffDashboard = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this staff member?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/staff/${id}`);
+      await axios.delete(`${API_BASE_URL}/staff/${id}`);
       fetchStaff();
     } catch (err) {
       console.error('Failed to delete staff:', err);
@@ -56,7 +58,7 @@ const StaffDashboard = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-10">
               <button
                 onClick={() => {
-                  setSelectedStaff(null);  // <-- Reset selected staff here!
+                  setSelectedStaff(null);
                   setActiveTab('add');
                 }}
                 className="bg-indigo-500 hover:bg-indigo-600 text-white py-4 px-6 rounded-xl shadow-lg"

@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+} from 'recharts';
 
 const MonthlyRevenueChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchSummary = async () => {
-  try {
-    const res = await axios.get('/api/payments/summary/monthly', {
-      withCredentials: true
-    });
-    setData(res.data);
-  } catch (error) {
-    console.error('Error fetching monthly summary:', error);
-  }
-};
+      try {
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+        const res = await axios.get(`${API_BASE_URL}/api/payments/summary/monthly`, {
+          withCredentials: true,
+        });
+        setData(res.data);
+      } catch (error) {
+        console.error('Error fetching monthly summary:', error);
+      }
+    };
     fetchSummary();
   }, []);
 

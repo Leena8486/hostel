@@ -8,18 +8,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Fetch the current logged-in user from backend
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get('http://localhost:5000/api/auth/me', 
- { withCredentials: true });
-      setUser(res.data);
-    } catch (err) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
+const fetchUser = async () => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/auth/me`, { withCredentials: true });
+    setUser(res.data);
+  } catch (err) {
+    setUser(null);
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     fetchUser();
   }, []);

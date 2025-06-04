@@ -3,10 +3,12 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Dialog } from '@headlessui/react';
 import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/solid';
-import { useNavigate } from 'react-router-dom'; // ✅ import added
+import { useNavigate } from 'react-router-dom';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api";
 
 export default function ManageUsers() {
-  const navigate = useNavigate(); // ✅ hook for navigation
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [search, setSearch] = useState('');
@@ -25,7 +27,7 @@ export default function ManageUsers() {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get('/api/admin/users', { withCredentials: true });
+      const { data } = await axios.get(`${API_BASE_URL}/admin/users`, { withCredentials: true });
       setUsers(data);
     } catch {
       toast.error('Failed to fetch users');
@@ -34,7 +36,7 @@ export default function ManageUsers() {
 
   const fetchRooms = async () => {
     try {
-      const { data } = await axios.get('/api/admin/rooms', { withCredentials: true });
+      const { data } = await axios.get(`${API_BASE_URL}/admin/rooms`, { withCredentials: true });
       setRooms(data);
     } catch {
       toast.error('Failed to fetch rooms');
@@ -43,7 +45,7 @@ export default function ManageUsers() {
 
   const assignRoom = async (userId, roomId) => {
     try {
-      await axios.put(`/api/admin/users/${userId}/assign-room`, { roomId }, { withCredentials: true });
+      await axios.put(`${API_BASE_URL}/admin/users/${userId}/assign-room`, { roomId }, { withCredentials: true });
       toast.success('Room assigned');
       fetchUsers();
     } catch {
@@ -53,7 +55,7 @@ export default function ManageUsers() {
 
   const checkIn = async (userId) => {
     try {
-      await axios.put(`/api/admin/users/${userId}/check-in`, {}, { withCredentials: true });
+      await axios.put(`${API_BASE_URL}/admin/users/${userId}/check-in`, {}, { withCredentials: true });
       toast.success('User checked in');
       fetchUsers();
     } catch {
@@ -63,7 +65,7 @@ export default function ManageUsers() {
 
   const checkOut = async (userId) => {
     try {
-      await axios.put(`/api/admin/users/${userId}/check-out`, {}, { withCredentials: true });
+      await axios.put(`${API_BASE_URL}/admin/users/${userId}/check-out`, {}, { withCredentials: true });
       toast.success('User checked out');
       fetchUsers();
     } catch {
@@ -74,7 +76,7 @@ export default function ManageUsers() {
   const deleteUser = async (id) => {
     if (!window.confirm('Delete user?')) return;
     try {
-      await axios.delete(`/api/admin/users/${id}`, { withCredentials: true });
+      await axios.delete(`${API_BASE_URL}/admin/users/${id}`, { withCredentials: true });
       toast.success('User deleted');
       fetchUsers();
     } catch {
@@ -105,10 +107,10 @@ export default function ManageUsers() {
   const saveUser = async () => {
     try {
       if (editingUser) {
-        await axios.put(`/api/admin/users/${editingUser._id}`, formData, { withCredentials: true });
+        await axios.put(`${API_BASE_URL}/admin/users/${editingUser._id}`, formData, { withCredentials: true });
         toast.success('User updated');
       } else {
-        await axios.post(`/api/admin/users`, formData, { withCredentials: true });
+        await axios.post(`${API_BASE_URL}/admin/users`, formData, { withCredentials: true });
         toast.success('User added');
       }
       fetchUsers();
@@ -122,6 +124,7 @@ export default function ManageUsers() {
     (!filterRole || user.role === filterRole) &&
     (user.name.toLowerCase().includes(search.toLowerCase()) || user.email.toLowerCase().includes(search.toLowerCase()))
   );
+
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
